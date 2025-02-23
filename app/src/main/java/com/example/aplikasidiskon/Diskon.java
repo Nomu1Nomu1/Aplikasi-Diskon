@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -26,28 +27,32 @@ public class Diskon extends AppCompatActivity {
         diskonButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String nominalStr = etHarga.getText().toString();
-                String diskonStr = etDiskon.getText().toString();
-
-                double nominal = Double.parseDouble(nominalStr);
-                double diskon = Double.parseDouble(diskonStr);
+                String nominalStr = etHarga.getText().toString().trim();
+                String diskonStr = etDiskon.getText().toString().trim();
 
                 if (nominalStr.isEmpty() || diskonStr.isEmpty()) {
-                    tvHasil.setText("Please fill the blank fields");
+                    Toast.makeText(Diskon.this, "Masukkan Nominal/Diskon", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                if (diskon < 0 || diskon > 100) {
-                    tvHasil.setText("Diskon must be between 0 and 100");
-                    return;
+                try {
+                    double nominal = Double.parseDouble(nominalStr);
+                    double diskon = Double.parseDouble(diskonStr);
+
+                    if (diskon < 0 || diskon > 100) {
+                        Toast.makeText(Diskon.this, "Range Diskon 1-100", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    double hasil = nominal - (nominal * diskon/100);
+
+                    NumberFormat format = NumberFormat.getNumberInstance(new Locale("id", "ID"));
+                    String price = format.format(hasil);
+
+                    tvHasil.setText("Rp " + price);
+                } catch (NumberFormatException e) {
+                    Toast.makeText(Diskon.this, "Masukkan Input", Toast.LENGTH_SHORT).show();
                 }
-
-                double hargaSetelahDiskon = nominal - (nominal * diskon / 100);
-
-                NumberFormat formatter = NumberFormat.getNumberInstance(new Locale("id", "ID"));
-                String price = formatter.format(hargaSetelahDiskon);
-
-                tvHasil.setText("Rp "+price);
             }
         });
     }
